@@ -1,6 +1,6 @@
 ---
 title: "Poverty and food security impacts of sustainable intensification: evidence from Ethiopia."
-authors: "Orkhan Sariyev, Wubneshe Dessalegn Biru, Jacob Asravor, Manfred Zeller"
+authors: "Orkhan Sariyev, Jacob Asravor, Manfred Zeller"
 date: "2023-11-07"
 output: html_document
 ---
