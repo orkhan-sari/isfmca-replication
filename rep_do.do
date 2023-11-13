@@ -1,8 +1,12 @@
 /*
 1. Please upload files to a folder of your preference 
-2. Change the working directory below in line 5,18, 27, and elsewhere necessary 
+2. Change the working directory below in line 5 and uncomment
+3. Selmlog.ado file needs to be placed in this directory. See http://www.parisschoolofeconomics.com/gurgand-marc/selmlog/selmlog13.html 
 */
-* cd "C:\Research\sustainable-intensification\data"
+// global folder = "C:\Research\sustainable-intensification\GitHub_files\isfmca-replication"
+version 18.0
+cd ${folder}
+pwd
 use rep_data.dta, clear
 global xlist female age edu hhsize depratio dis_market dis_extension plot_distance land_certificate poorsoil goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations if_loan if_nonfarm ext_visit ext_training fellow_farmer rain_py d_year2 d_year3 
 global ylist female age edu hhsize depratio  dis_market dis_extension plot_distance land_certificate poorsoil goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations if_loan if_nonfarm ext_visit ext_training fellow_farmer rain_py  d_year2 d_year3
@@ -15,16 +19,14 @@ local i=`i'+1
 }
 global m_listx m_female m_age m_edu m_hhsize m_depratio m_dis_market m_dis_extension m_plot_distance m_land_certificate m_poorsoil m_goodsoil m_farmsize m_tTLU_owned m_if_pesticides m_maize m_barley m_shock_count m_coping_cost_sum m_organizations m_if_loan m_if_nonfarm m_ext_visit m_ext_training m_fellow_farmer m_rain_py 
 global m_listy m_female m_age m_edu m_hhsize m_depratio m_dis_market m_dis_extension m_plot_distance m_land_certificate m_poorsoil m_goodsoil m_farmsize m_tTLU_owned m_if_pesticides m_maize m_barley m_shock_count m_coping_cost_sum m_organizations m_if_loan m_if_nonfarm m_ext_visit m_ext_training m_fellow_farmer m_rain_py 
-* cd "C:\Research\sustainable-intensification"
 mlogit isfm $xlist $iv $m_listx i.region, base(1) cluster (qid)
-* outreg2 using mlogit_isfm, excel replace sideway bdec(2) cdec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Adoption")
+outreg2 using mlogit_isfm, excel replace sideway bdec(2) cdec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Adoption")
 mlogit isfmca $xlist $iv $m_listx i.region, base(1) cluster (qid)
-* outreg2 using mlogit_isfm, excel append sideway bdec(2) cdec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Adoption")
+outreg2 using mlogit_isfm, excel append sideway bdec(2) cdec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Adoption")
 rename HDDS hdds
 ge hdds1=hdds if isfm==1 //none 
 ge hdds2=hdds if isfm==2 //2 isfm
 ge hdds3=hdds if isfm==3 //isfm full
-* cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog hdds1 $ylist $m_listy region, select(isfm=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) showm mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -54,7 +56,6 @@ drop _m1 _m2 _m3
 ge food_insecurity1=food_insecurity if isfm==1 //none 
 ge food_insecurity2=food_insecurity if isfm==2 //isfm2
 ge food_insecurity3=food_insecurity if isfm==3 //isfmfull
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog food_insecurity1 $ylist $m_listy region, select(isfm=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -82,7 +83,6 @@ drop _m1 _m2 _m3
 drop food_insecurity1 food_insecurity2 food_insecurity3
 
 **# food expenditure - MESR one step selmlog
-cd "C:\Research\sustainable-intensification"
 ge def_food_exp1=lndef_food_exp if isfm==1 //none 
 ge def_food_exp2=lndef_food_exp if isfm==2 //iv
 ge def_food_exp3=lndef_food_exp if isfm==3 //isfm
@@ -115,7 +115,6 @@ drop _m1 _m2 _m3
 ge poor1=poor if isfm==1 //none 
 ge poor2=poor if isfm==2 //isfm2
 ge poor3=poor if isfm==3 //isfm3
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog poor1 $ylist $m_listy region, select(isfm=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -142,7 +141,6 @@ gen poor113=poorr3 if isfm==3
 drop _m1 _m2 _m3 
 
 **# pov_gap - MESR one step selmlog
-cd "C:\Research\sustainable-intensification"
 ge pov_gap1=pov_gap if isfm==1 //none 
 ge pov_gap2=pov_gap if isfm==2 //iv
 ge pov_gap3=pov_gap if isfm==3 //isfm
@@ -172,7 +170,6 @@ gen ga113=gap3 if isfm==3
 drop _m1 _m2 _m3 
 
 **# pov_severity - MESR one step selmlog
-cd "C:\Research\sustainable-intensification"
 ge pov_severity1=pov_severity if isfm==1 //none 
 ge pov_severity2=pov_severity if isfm==2 //iv
 ge pov_severity3=pov_severity if isfm==3 //isfm
@@ -201,7 +198,6 @@ predict gap6, xb
 gen gap113=gap6 if isfm==3
 drop _m1 _m2 _m3 
 **# putexcel isfm
-cd "C:\Research\sustainable-intensification"
 putexcel set "resultsisfm.xlsx", sheet("ATT") modify
 putexcel A2 = ("HDDS")
 putexcel A4 = ("Experience of food insecurity")
@@ -336,7 +332,6 @@ ge hdds1=hdds if isfmca==1 //none
 ge hdds2=hdds if isfmca==2 //isfmca
 ge hdds3=hdds if isfmca==3 //ca
 ge hdds4=hdds if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog hdds1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -380,7 +375,6 @@ ge food_insecurity1=food_insecurity if isfmca==1 //none
 ge food_insecurity2=food_insecurity if isfmca==2 //isfmca
 ge food_insecurity3=food_insecurity if isfmca==3 //ca
 ge food_insecurity4=food_insecurity if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog food_insecurity1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -424,7 +418,6 @@ ge lndef_food_exp1=lndef_food_exp if isfmca==1 //none
 ge lndef_food_exp2=lndef_food_exp if isfmca==2 //isfmca
 ge lndef_food_exp3=lndef_food_exp if isfmca==3 //ca
 ge lndef_food_exp4=lndef_food_exp if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog lndef_food_exp1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -468,7 +461,6 @@ ge poor1=poor if isfmca==1 //none
 ge poor2=poor if isfmca==2 //isfmca
 ge poor3=poor if isfmca==3 //ca
 ge poor4=poor if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog poor1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -512,7 +504,6 @@ ge pov_gap1=pov_gap if isfmca==1 //none
 ge pov_gap2=pov_gap if isfmca==2 //isfmca
 ge pov_gap3=pov_gap if isfmca==3 //ca
 ge pov_gap4=pov_gap if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog pov_gap1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -556,7 +547,6 @@ ge pov_severity1=pov_severity if isfmca==1 //none
 ge pov_severity2=pov_severity if isfmca==2 //isfmca
 ge pov_severity3=pov_severity if isfmca==3 //ca
 ge pov_severity4=pov_severity if isfmca==4 //isfm
-cd "C:\Research\sustainable-intensification"
 do selmlog.ado
 selmlog pov_severity1 $ylist $m_listy region, select(isfmca=$xlist $iv $m_listx region) boot(200) dmf(1) gen(m) mloptions(baseoutcome(1) cluster (qid))
 rename m1 _m1
@@ -595,7 +585,6 @@ gen isfmimpact5=sev4 if isfmca==4
 drop _m1 _m2 _m3 _m4 
 drop pov_severity1 pov_severity2 pov_severity3 pov_severity4
 **# putexcel isfmca
-cd "C:\Research\sustainable-intensification"
 putexcel set "resultsisfm.xlsx", sheet("ATT2") modify
 putexcel A2 = ("HDDS")
 putexcel A5 = ("Experience of food insecurity")
@@ -946,7 +935,7 @@ pause off
 set more on
 *"Note: Sharpened FDR q-vals can be LESS than unadjusted p-vals when many hypotheses are rejected, because if you have many true rejections, then you can tolerate several false rejections too (this effectively just happens for p-vals that are so large that you are not going to reject them regardless)."
 **# Hausman test for independence of irrelevant alternatives assumption (IIA) and joint signifficance test for Hausman variables
-cd "C:\Research\sustainable-intensification\data"
+cd ${folder}
 use rep_data.dta, clear
 global xlist female age edu hhsize depratio dis_market dis_extension plot_distance land_certificate poorsoil goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations if_loan if_nonfarm ext_visit ext_training fellow_farmer rain_py d_year2 d_year3 
 global ylist female age edu hhsize depratio  dis_market dis_extension plot_distance land_certificate poorsoil goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations if_loan if_nonfarm ext_visit ext_training fellow_farmer rain_py  d_year2 d_year3
