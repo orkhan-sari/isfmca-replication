@@ -1,6 +1,6 @@
 /*
 1. Please upload files to a folder of your preference 
-2. Change the working directory below in line 5 and uncomment
+2. Change the working directory below in line 6 and uncomment
 3. Selmlog.ado file needs to be placed in this directory. See http://www.parisschoolofeconomics.com/gurgand-marc/selmlog/selmlog13.html 
 */
 // global folder = "C:\Research\sustainable-intensification\GitHub_files\isfmca-replication"
