@@ -1004,3 +1004,208 @@ reg pov_gap $ylist $m_listy region $iv if isfmca==1, robust
 outreg2 using falsification, excel append sideway bdec(3) cdec(3) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) keep (sd_rainfall his_average) cti("Poverty gap")
 reg pov_severity $ylist $m_listy region $iv if isfmca==1, robust 
 outreg2 using falsification, excel append sideway bdec(3) cdec(3) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) keep (sd_rainfall his_average) cti("Severity of poverty")
+
+
+**# Alternative methods - random effects and ipwra
+// global folder = "C:\Research\sustainable-intensification\GitHub_files\isfmca-replication"
+cd ${folder}
+use rep_data.dta, clear
+global xfixed i.isfm i.female age edu hhsize depratio dis_market dis_extension plot_distance i.land_certificate i.poorsoil i.goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations i.if_loan if_nonfarm i.ext_visit i.ext_training i.fellow_farmer rain_py i.region
+xtset qid year
+quietly xtreg lndef_food_exp  $xfixed, fe
+estimates store fixed
+quietly xtreg lndef_food_exp $xfixed, re
+estimates store random
+hausman fixed random, sigmamore //random
+use rep_data.dta, clear
+xtset qid year
+quietly xtreg pov_gap $xfixed, fe
+estimates store fixed
+quietly xtreg pov_gap $xfixed, re
+estimates store random
+hausman fixed random, sigmamore //random
+use rep_data.dta, clear
+xtset qid year
+quietly xtreg pov_severity $xfixed, fe
+estimates store fixed
+quietly xtreg pov_severity $xfixed, re
+estimates store random
+hausman fixed random, sigmamore //random
+use rep_data.dta, clear
+xtset qid year
+quietly xtreg food_insecurity $xfixed, fe
+estimates store fixed
+quietly xtreg food_insecurity $xfixed, re
+estimates store random
+hausman fixed random, sigmamore //random
+use rep_data.dta, clear
+xtset qid year
+quietly xtreg poor $xfixed, fe
+estimates store fixed
+quietly xtreg poor $xfixed, re
+estimates store random
+hausman fixed random, sigmamore //random
+xtreg lndef_food_exp $xfixed i.year, re cluster (qid)
+outreg2 using alternative, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure RE")
+xtreg lndef_food_exp $xfixed i.year, fe cluster (qid)
+outreg2 using alternative, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure FE")
+xtreg HDDS $xfixed i.year, re cluster (qid)
+outreg2 using alternative, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS RE")
+xtreg HDDS $xfixed i.year, fe cluster (qid)
+outreg2 using alternative, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS FE")
+xtreg food_insecurity $xfixed i.year, re cluster (qid)
+outreg2 using alternative, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecurity RE")
+xtreg food_insecurity $xfixed i.year, fe cluster (qid)
+outreg2 using alternative, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecurity FE")
+xtreg poor $xfixed i.year, re cluster (qid)
+outreg2 using alternative1, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor RE")
+xtreg poor $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor FE")
+xtreg pov_gap $xfixed i.year, re cluster (qid)
+outreg2 using alternative1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap RE")
+xtreg pov_gap $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap FE")
+xtreg pov_severity $xfixed i.year, re cluster (qid)
+outreg2 using alternative1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity RE")
+xtreg pov_severity $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity FE")
+
+*ISFMCA
+cd ${folder}
+use rep_data.dta, clear
+xtset qid year
+global xfixed i.isfmca i.female age edu hhsize depratio dis_market dis_extension plot_distance i.land_certificate i.poorsoil i.goodsoil farmsize tTLU_owned if_pesticides maize barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations i.if_loan if_nonfarm i.ext_visit i.ext_training i.fellow_farmer rain_py i.region
+xtreg lndef_food_exp $xfixed i.year, re cluster (qid)
+outreg2 using alternativeca, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure RE")
+xtreg lndef_food_exp $xfixed i.year, fe cluster (qid)
+outreg2 using alternativeca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure FE")
+xtreg HDDS $xfixed i.year, re cluster (qid)
+outreg2 using alternativeca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS RE")
+xtreg HDDS $xfixed i.year, fe cluster (qid)
+outreg2 using alternativeca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS FE")
+xtreg food_insecurity $xfixed i.year, re cluster (qid)
+outreg2 using alternativeca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecurity RE")
+xtreg food_insecurity $xfixed i.year, fe cluster (qid)
+outreg2 using alternativeca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecurity FE")
+xtreg poor $xfixed i.year, re cluster (qid)
+outreg2 using alternative1ca, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor RE")
+xtreg poor $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1ca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor FE")
+xtreg pov_gap $xfixed i.year, re cluster (qid)
+outreg2 using alternative1ca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap RE")
+xtreg pov_gap $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1ca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap FE")
+xtreg pov_severity $xfixed i.year, re cluster (qid)
+outreg2 using alternative1ca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity RE")
+xtreg pov_severity $xfixed i.year, fe cluster (qid)
+outreg2 using alternative1ca, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity FE")
+
+
+* IPWRA
+cd ${folder}
+use rep_data.dta, clear
+preserve
+global xipwra i.female age edu hhsize depratio dis_market dis_extension plot_distance i.land_certificate i.poorsoil i.goodsoil farmsize tTLU_owned i.if_pesticides i.maize i.barley alt shock_count coping_cost_sum shallow_slope steep_slope organizations i.if_loan if_nonfarm i.ext_visit i.ext_training i.fellow_farmer rain_py i.region
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (lndef_food_exp $xipwra) (isfm $xipwra, probit), atet
+outreg2 using ipwra, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure 2014") drop($xipwra)
+restore
+preserve
+keep if year==2016
+recode isfm (3=2)
+teffects ipwra (lndef_food_exp $xipwra) (isfm $xipwra, probit), atet
+
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure 2016") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (lndef_food_exp $xipwra) (isfm $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food expenditure 2019") drop($xipwra)
+restore
+preserve
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (HDDS $xipwra) (isfm  $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS 2014") drop($xipwra)
+restore
+preserve
+keep if year==2016
+recode isfm (3=2)
+teffects ipwra (HDDS $xipwra) (isfm  $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS 2016") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (HDDS $xipwra) (isfm  $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("HDDS 2019") drop($xipwra)
+restore
+preserve
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (food_insecurity $xipwra, probit) (isfm $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecure 2014") drop($xipwra)
+restore
+preserve
+keep if year==2016
+recode isfm (3=2)
+teffects ipwra (food_insecurity $xipwra, probit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecure 2016") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (food_insecurity $xipwra, probit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Food insecure 2019") drop($xipwra)
+restore
+preserve
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (poor $xipwra, probit) (isfm $xipwra, probit), atet
+outreg2 using ipwra1, excel replace sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor 2014") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (poor $xipwra, probit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Probability of being poor 2019") drop($xipwra)
+restore
+preserve
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (pov_gap $xipwra, fprobit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap 2014") drop($xipwra)
+restore
+preserve
+keep if year==2016
+recode isfm (3=2)
+teffects ipwra (pov_gap $xipwra, fprobit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap 2016") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (pov_gap $xipwra, fprobit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty gap 2014") drop($xipwra)
+restore
+preserve
+keep if year==2014
+recode isfm (3=2)
+teffects ipwra (pov_severity $xipwra, fprobit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity 2014") drop($xipwra)
+restore
+preserve
+keep if year==2016
+recode isfm (3=2)
+teffects ipwra (pov_severity $xipwra, fprobit) (isfm $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity 2016") drop($xipwra)
+restore
+preserve
+keep if year==2019
+recode isfm (3=2)
+teffects ipwra (pov_severity $xipwra, fprobit) (isfm  $xipwra, probit), atet
+outreg2 using ipwra1, excel append sideway dec(2) label symbol(***, **, *) alpha (.01, .05, .10) stats(coef se) cti("Poverty severity 2019") drop($xipwra)
+restore
+clear
